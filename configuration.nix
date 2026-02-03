@@ -4,6 +4,8 @@
   imports =
     [ # Hardware Config
       ./hardware-configuration.nix
+
+      ./modules/zfs-snapshots.nix
       # Chaotic-Nyx Module (kommt aus flake.nix)
       # inputs.chaotic.nixosModules.default (Wird über flake.nix geladen)
       
