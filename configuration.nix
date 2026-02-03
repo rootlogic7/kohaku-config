@@ -1,94 +1,202 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   imports =
-    [ # Bindet die automatisch generierte Hardware-Config ein
+    [ # Hardware Config
       ./hardware-configuration.nix
+      # Chaotic-Nyx Module (kommt aus flake.nix)
+      # inputs.chaotic.nixosModules.default (Wird über flake.nix geladen)
     ];
 
-  # --- Bootloader & Kernel ---
+  # --- Bootloader & Kernel (CachyOS High Performance) ---
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   
-  # STRATEGIE: Wir nutzen für die Installation erst 'linuxPackages_latest'.
-  # Sobald das System läuft und wir auf Flakes umgestellt haben, 
-  # tauschen wir dies gegen den CachyOS-Kernel (via chaotic-nyx) aus.
+  # Der optimierte CachyOS Kernel
   boot.kernelPackages = pkgs.linuxPackages_cachyos;
-  # ZFS Unterstützung aktivieren
+
+  # Zusätzliche Kernel-Parameter für Nvidia & Performance
+  boot.kernelParams = [
+    "nvidia-drm.fbdev=1" 
+    "quiet" "splash"
+  ];
+
+  # CachyOS Scheduler (scx) - "lavd" ist 2026 der Goldstandard für Gaming
+  services.scx.enable = true;
+  services.scx.scheduler = "scx_lavd";
+  
+  # Ananicy-Cpp: Automatische Prozess-Priorisierung
+  services.ananicy = {
+    enable = true;
+    package = pkgs.ananicy-cpp;
+    rulesProvider = pkgs.ananicy-rules-cachyos;
+  };
+
+  # ZFS Settings
   boot.supportedFilesystems = [ "zfs" ];
   networking.hostId = "8425e349"; 
-
-  # --- Verschlüsselung (LUKS) ---
+  
+  # LUKS Verschlüsselung (Root + HDDs)
   boot.initrd.luks.devices = {
-    "crypt_root1" = {
-      device = "/dev/nvme0n1p2";
-      preLVM = true;
-    };
-    "crypt_root2" = {
-      device = "/dev/nvme1n1p2";
-      preLVM = true;
-    };
+    # System (NVMe)
+    "crypt_root1" = { device = "/dev/nvme0n1p2"; preLVM = true; };
+    "crypt_root2" = { device = "/dev/nvme1n1p2"; preLVM = true; };
+    
+    # Storage (HDDs) - IDs basierend auf deiner Hardware
+    "crypt_safe1" = { device = "/dev/disk/by-id/ata-TOSHIBA_DT01ACA200_94JKP2VHS-part1"; preLVM = true; };
+    "crypt_safe2" = { device = "/dev/disk/by-id/ata-WDC_WD40EZRZ-22GXCB0_WD-WCC7K5LD8Y9V-part1"; preLVM = true; };
+    "crypt_extra" = { device = "/dev/disk/by-id/ata-WDC_WD40EZRZ-22GXCB0_WD-WCC7K5LD8Y9V-part2"; preLVM = true; };
+  };
+
+  # --- Storage (HDDs) ---
+  # Hier binden wir die neuen Pools ein.
+  # 1. Der sichere Mirror (Backups)
+  fileSystems."/storage/backup" = {
+    device = "safe/backup";
+    fsType = "zfs";
+  };
+
+  # 2. Der Massenspeicher (Medien)
+  fileSystems."/storage/media" = {
+    device = "extra/media";
+    fsType = "zfs";
   };
 
   # --- Networking ---
   networking.hostName = "kohaku";
   networking.networkmanager.enable = true;
-  # --- SSH ---
+  
+  # Firewall Konfiguration
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [ 22 ];
+  };
+  
+  # SSH
   services.openssh = {
     enable = true;
-    settings = {
-      PermitRootLogin = "yes";
-      PermitEmptyPasswords = "no";
-    };
+    settings = { PermitRootLogin = "no"; PermitEmptyPasswords = "no"; };
   };
-  # --- Keyboard/Language ---
+
+  # --- Locale & Time ---
   time.timeZone = "Europe/Berlin";
   i18n.defaultLocale = "en_US.UTF-8";
   console.keyMap = "de";
 
-  # --- Optimierungen ---
-  zramSwap.enable = true;
-  
-  # --- Grafik (Nvidia RTX 5060) ---
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
+  services.xserver.xkb = {
+    layout = "de";
+    variant = "";
   };
 
-  services.xserver.videoDrivers = ["nvidia"];
+  # --- Hyprland & Grafik ---
+  programs.hyprland = {
+    enable = true;
+    xwayland.enable = true;
+  };
 
+  # Gamemode
+  programs.gamemode = {
+    enable = true;
+    enableRenice = true;
+    settings = {
+      general = {
+        softrealtime = "auto";
+        renice = 10;
+      };
+    };
+  };
+
+  # Login Manager (SDDM)
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = true;
+  };
+
+  # Environment Variablen
+  environment.sessionVariables = {
+    NIXOS_OZONE_WL = "1"; 
+    WLR_NO_HARDWARE_CURSORS = "1";
+    GBM_BACKEND = "nvidia-drm";
+    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+  };
+
+  # Grafiktreiber
+  hardware.graphics = { enable = true; enable32Bit = true; };
+  services.xserver.videoDrivers = ["nvidia"];
+  
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = false;
-    
-    # Auf 'true' gesetzt für Open Kernel Modules.
-    # Empfohlen für RTX Karten und modernere Kernel (wie CachyOS später).
+    powerManagement.finegrained = false; 
     open = true; 
-    
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
 
-  # --- User & System ---
-  users.users.haku = { 
-    isNormalUser = true;
-    # Hier kannst du schreiben, was du willst (Anzeigename)
-    description = "Haku"; 
-    extraGroups = [ "networkmanager" "wheel" ];
+  # --- Shell & Tools ---
+  programs.zsh = {
+    enable = true;
+    enableCompletion = true;
+    autosuggestions.enable = true;
+    syntaxHighlighting.enable = true;
+  };
+
+  programs.neovim = {
+    enable = true;
+    defaultEditor = true;
+    viAlias = true;
+    vimAlias = true;
   };
 
   nixpkgs.config.allowUnfree = true;
-
-  # --- Flakes & Nix Command aktivieren ---
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
+  
   environment.systemPackages = with pkgs; [
-    vim
     git
     wget
+    curl
     pciutils
     htop
+    fastfetch
+    ghostty
+    wl-clipboard
+    yazi
+    mangohud 
   ];
+
+  fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.fira-code
+    noto-fonts
+    noto-fonts-cjk-sans
+    noto-fonts-color-emoji
+  ];
+
+  # --- User ---
+  users.users.haku = { 
+    isNormalUser = true;
+    description = "Haku"; 
+    extraGroups = [ "networkmanager" "wheel" "video" "gamemode" ];
+    shell = pkgs.zsh;
+  };
+
+  # Binary Cache Settings
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+    substituters = [
+      "https://nix-community.cachix.org"
+      "https://chaotic-nyx.cachix.org"
+    ];
+    trusted-public-keys = [
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      "chaotic-nyx.cachix.org-1:dHw3kV0d+x7O25psfwbP6tV76r4ivI8pshwlSwP63cs="
+    ];
+  };
+  
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 7d";
+  };
 
   system.stateVersion = "24.11"; 
 }

@@ -2,25 +2,42 @@
   description = "Kohaku NixOS Flake";
 
   inputs = {
-    # Offizielles NixOS Repository (Unstable für aktuellste Software/Kernel)
+    # NixOS Unstable
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     
-    # Chaotic Nyx (CachyOS Kernel, Gaming Optimierungen)
+    # Chaotic Nyx (CachyOS Kernel)
     chaotic = {
       url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
-      # WICHTIG: Nutze das gleiche nixpkgs wie das System, um Fehler zu vermeiden!
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Home Manager (Verwaltet Dotfiles & User-Programme)
+    home-manager = {
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { self, nixpkgs, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, ... }@inputs: {
     nixosConfigurations.kohaku = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [
         inputs.chaotic.nixosModules.default
-
         ./configuration.nix
-        { nixpkgs.config.allowUnfree = true; }
+        
+        # Home Manager Modul direkt einbinden
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+
+          # FIX: Wenn Dateien schon existieren, benenne sie um (.backup), statt abzubrechen
+          home-manager.backupFileExtension = "backup";
+          
+          # Hier definieren wir, dass der User 'haku' die Datei home.nix nutzt
+          home-manager.users.haku = import ./home.nix;
+        }
       ];
     };
   };
