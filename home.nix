@@ -14,6 +14,10 @@
       # Monitor Setup (Auto)
       monitor = ",preferred,auto,auto";
 
+      cursor = {
+        no_hardware_cursors = true;
+      };
+
       # Eingabegeräte
       input = {
         kb_layout = "de";
