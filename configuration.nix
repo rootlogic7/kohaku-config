@@ -65,7 +65,8 @@
   # ZFS Settings
   boot.supportedFilesystems = [ "zfs" ];
   networking.hostId = "8425e349"; 
-  
+  services.zfs.trim.enable = true;
+
   # LUKS Verschlüsselung (Root + HDDs)
   boot.initrd.luks.devices = {
     # System (NVMe)
@@ -101,9 +102,7 @@
     # Das bedeutet: Nur dieser PC kann die Secrets lesen!
     age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
     
-    # TEST: Wir aktivieren das 'test_secret' um zu prüfen, ob alles klappt.
-    # (Voraussetzung: Du hast 'test_secret' in der secrets.yaml angelegt)
-    # secrets.test_secret = {};
+    secrets."haku-password".neededForUsers = true;
   };
 
   # --- Networking ---
@@ -232,7 +231,8 @@
   # --- User ---
   users.users.haku = { 
     isNormalUser = true;
-    description = "Haku"; 
+    description = "Haku";
+    hashedPasswordFile = config.sops.secrets."haku-password".path;
     extraGroups = [ "networkmanager" "wheel" "video" "gamemode" ];
     shell = pkgs.zsh;
     openssh.authorizedKeys.keys = [ mySshKey ];
