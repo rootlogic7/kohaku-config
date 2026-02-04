@@ -12,7 +12,8 @@
     # Hier passiert die Magie: Wir schreiben die Config direkt in Nix
     settings = {
       # Monitor Setup (Auto)
-      monitor = ",preferred,auto,auto";
+      monitor = "DP-1,3440x1440@100,0x0,auto";
+      monitor = "HDMI-A-1,1920x1080@100,3440x0,auto";
 
       cursor = {
         no_hardware_cursors = true;
@@ -71,11 +72,55 @@
   };
 
   # Shell Integration
+  programs.starship = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
+    
+    # Verlauf-Einstellungen
+    history = {
+      size = 10000;
+      save = 10000;
+      share = true; # Verlauf zwischen Tabs teilen
+      path = "${config.home.homeDirectory}/.zsh_history";
+    };
+
+    # Aliases für faulere Tipper (NixOS optimiert)
+    shellAliases = {
+      # NixOS Management
+      nix-switch = "sudo nixos-rebuild switch --flake .#kohaku";
+      nix-check = "sudo nixos-rebuild dry-activate --flake .#kohaku";
+      nix-clean = "sudo nix-collect-garbage -d";
+      
+      # Komfort
+      ls = "ls --color=auto";
+      ll = "ls -lah";
+      grep = "grep --color=auto";
+      ".." = "cd ..";
+      
+      # Git (weil wir gerade dabei sind)
+      gs = "git status";
+      ga = "git add .";
+      gc = "git commit -m";
+      gp = "git push";
+    };
+
+    # Vi-Mode (da du Neovim nutzt)
+    defaultKeymap = "viins"; 
+
+    initContent= ''
+      # Behebt oft Probleme bei SSH-Verbindungen von anderen Shells
+      export TERM=xterm-256color 
+
+      # Fix für Backspace in manchen SSH-Clients
+      bindkey "^?" backward-delete-char
+    '';
   };
 
   # Dieser State Version Wert darf nicht geändert werden

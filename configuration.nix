@@ -197,12 +197,7 @@
   };
 
   # --- Shell & Tools ---
-  programs.zsh = {
-    enable = true;
-    enableCompletion = true;
-    autosuggestions.enable = true;
-    syntaxHighlighting.enable = true;
-  };
+  programs.zsh.enable = true;
 
   programs.neovim = {
     enable = true;
