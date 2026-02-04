@@ -107,6 +107,8 @@
   # --- Networking ---
   networking.hostName = "kohaku";
   networking.networkmanager.enable = true;
+  # NEU: Explizite DNS Server (Cloudflare & Google oder dein Router-IP)
+  networking.nameservers = [ "1.1.1.1" ];
   
   # Firewall Konfiguration
   networking.firewall = {
