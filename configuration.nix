@@ -17,6 +17,28 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   
+  # --- Remote Unlock (Initrd SSH) ---
+  boot.initrd = {
+    # WICHTIG: Hier muss der Treiber deiner Netzwerkkarte stehen!
+    kernelModules = [ "r8169" ];
+
+    network = {
+      enable = true;
+      ssh = {
+        enable = true;
+        port = 22;
+        # Der Public Key deines Laptops (dieselbe Zeile wie bei users.users.haku)
+        authorizedKeys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIMD0q9gEM7isC6P98pLnNcEaoGP88toK3z+AqU9Gsx4 rootlogic7@proton.me" ];
+        # Damit du keine "Host Key changed" Warnung bekommst, nutzen wir den Host-Key
+        hostKeys = [ "/etc/ssh/ssh_host_ed25519_key" ];
+      };
+      postCommands = ''
+        ip addr add 192.168.178.20/24 dev enp4s0
+        ip link set enp4s0 up
+      ''; 
+    };
+  };
+
   # Der optimierte CachyOS Kernel
   boot.kernelPackages = pkgs.linuxPackages_cachyos;
 
@@ -26,6 +48,7 @@
     "quiet" "splash"
   ];
 
+  
   # CachyOS Scheduler (scx) - "lavd" ist 2026 der Goldstandard für Gaming
   services.scx.enable = true;
   services.scx.scheduler = "scx_lavd";
