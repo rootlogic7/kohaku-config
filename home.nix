@@ -12,7 +12,7 @@
     kitty         # BACKUP: Falls Ghostty mal crasht (kannst du auskommentiert lassen)
     yazi            # File Manager
     wl-clipboard    # Clipboard für Wayland (wichtig für Neovim/Yazi)
-
+    firefox
     # Quickshell
     inputs.quickshell.packages.${pkgs.system}.default
     qt6.qtdeclarative # Hilfreich für QML
