@@ -7,6 +7,7 @@ Willkommen im Monorepo für meine NixOS-Infrastruktur. Dieses Repository verwalt
 Die Konfiguration folgt dem Nix Flakes Ansatz und ist modular aufgebaut:
 
 ´´´
+
 a
 
 a.
