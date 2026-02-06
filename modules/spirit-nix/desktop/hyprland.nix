@@ -27,27 +27,22 @@
         "wl-paste --type image --watch cliphist store"
       ];
 
-      # --- Monitors ---
+      # --- Monitors (Fallback) ---
+      # Generisch: Versucht, jeden angeschlossenen Monitor automatisch zu konfigurieren.
+      # Spezifische Setups (wie dein DP-1) kommen in die User-Config.
       monitor = [
-        "DP-1,3440x1440@100,0x0,auto"
-        "HDMI-A-1,1920x1080@100,3440x0,auto"
+        ", preferred, auto, 1"
       ];
 
-      # --- Input & Env ---
-      env = [
-        "XCURSOR_SIZE,24"
-        "HYPRCURSOR_SIZE,24"
-        "NIXOS_OZONE_WL,1"
-      ];
-
+      # --- Input (Defaults) ---
       input = {
         kb_layout = "de";
         follow_mouse = 1;
-        sensitivity = 0;
-        accel_profile = "flat";
+        touchpad.natural_scroll = false;
+        # Sensitivity/Accel Profile entfernen wir hier -> User Config
       };
 
-      # --- Design System (Refactored) ---
+      # --- Design System ---
       general = {
         gaps_in = 5;
         gaps_out = 10;
@@ -92,12 +87,11 @@
 
       # --- Rules ---
       windowrule = [
-        # Polkit Agent (Muss floaten & Fokus haben)
         "float on, match:class hyprpolkitagent"
         "center on, match:class hyprpolkitagent"
         "dim_around on, match:class hyprpolkitagent"
         "stay_focused on, match:class hyprpolkitagent"
-
+        
         # Standard Dialoge
         "float on, match:title (Open File)"
         "float on, match:title (Select a File)"
@@ -114,12 +108,11 @@
         "float on, match:class com.github.rafostar.Clapper"
 
         # Steam
-        # Friends List muss floaten
         "float on, match:title (Friends List)"
         "float on, match:title (Steam Settings)"
         
         # Gaming Performance
-        "immediate on, match:class cs2"  # Tearing erlauben
+        "immediate on, match:class cs2"
       ];
 
       # --- Keybindings ---
