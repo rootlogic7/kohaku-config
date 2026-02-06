@@ -1,60 +1,76 @@
 {
-  description = "Kohaku NixOS Flake";
+  description = "Kohaku NixOS - Modular Configuration";
 
   inputs = {
-    # NixOS Unstable
+    # --- Core ---
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     
-    # Chaotic Nyx (CachyOS Kernel)
-    chaotic = {
-      url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # --- Kernel & Performance ---
+    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
 
-    # Home Manager (Verwaltet Dotfiles & User-Programme)
+    # --- User Management ---
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Sops Secret Management
+    # --- Secrets ---
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # NEU: Quickshell Input
-    quickshell = {
-      url = "git+https://git.outfoxxed.me/outfoxxed/quickshell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # --- Custom Modules ---
+    quickshell.url = "git+https://git.outfoxxed.me/outfoxxed/quickshell";
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs:
+  outputs = { self, nixpkgs, ... }@inputs:
   let
-  mySshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIMD0q9gEM7isC6P98pLnNcEaoGP88toK3z+AqU9Gsx4 rootlogic7@proton.me";
-  in {
-    nixosConfigurations.kohaku = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = { inherit inputs mySshKey; };
+    system = "x86_64-linux";
+    
+    # Globale Variablen
+    vars = {
+      user = "haku";
+      sshKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIMD0q9gEM7isC6P98pLnNcEaoGP88toK3z+AqU9Gsx4 rootlogic7@proton.me";
+    };
+
+    # Helper-Funktion für System-Erstellung
+    mkSystem = { hostname, user }: nixpkgs.lib.nixosSystem {
+      inherit system;
+      # Übergibt inputs und vars an alle Module
+      specialArgs = { inherit inputs vars; };
       modules = [
+        # 1. Host-Spezifische Konfiguration
+        ./hosts/${hostname}/default.nix
+        
+        # 2. Basis-System (immer dabei)
+        ./modules/core/default.nix
+
+        # 3. Kernel Optimierungen (Chaotic Nyx)
         inputs.chaotic.nixosModules.default
-        ./configuration.nix
-      
-        # Home Manager Modul direkt einbinden
-        home-manager.nixosModules.home-manager {
+        
+        # 4. Secrets Management
+        inputs.sops-nix.nixosModules.sops
+
+        # 5. Home Manager Integration
+        inputs.home-manager.nixosModules.home-manager {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-            
-	  # FIX: Wenn Dateien schon existieren, benenne sie um (.backup), statt abzubrechen
           home-manager.backupFileExtension = "backup";
-
-	  home-manager.extraSpecialArgs = { inherit inputs mySshKey; };
-
-          # Hier definieren wir, dass der User 'haku' die Datei home.nix nutzt
-          home-manager.users.haku = import ./home.nix;
+          home-manager.extraSpecialArgs = { inherit inputs vars; };
+          
+          # Lädt die Home-Config des angegebenen Users
+          home-manager.users.${user} = import ./users/${user}/home.nix;
         }
       ];
+    };
+  in {
+    nixosConfigurations = {
+      # Maschine: Kohaku
+      kohaku = mkSystem { 
+        hostname = "kohaku"; 
+        user = "haku"; 
+      };
     };
   };
 }
