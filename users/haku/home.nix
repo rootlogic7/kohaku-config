@@ -2,33 +2,29 @@
 
 {
   imports = [
-    ./desktop/hyprland.nix
-    ./desktop/quickshell.nix
-    ./cli/shell.nix
+    # Hier laden wir die "Spirit-Nix" Distro
+    # Das importiert automatisch Hyprland, Quickshell und die Shell-Config
+    ../../modules/spirit-nix/default.nix
   ];
 
   home.username = vars.user;
   home.homeDirectory = "/home/${vars.user}";
   
-  # --- Allgemeine User Pakete ---
+  # --- User-Spezifische Tools ---
+  # Alles was NICHT Teil des Standard-Themes ist (z.B. persönliche Arbeits-Tools)
+  # Ghostty, Kitty, Hyprland-Tools sind jetzt alle in Spirit-Nix!
   home.packages = with pkgs; [
-    # GUI Tools
     firefox
     yazi
     wl-clipboard
-
-    # CLI Utilities (Power User)
     ripgrep
     fd
     btop
     tldr
     fzf
-
-    # Gaming
     mangohud
   ];
 
-  # Fonts Konfiguration (für Home-Manager verwaltet)
   fonts.fontconfig.enable = true;
 
   home.stateVersion = "24.11";

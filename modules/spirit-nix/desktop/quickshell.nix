@@ -1,12 +1,12 @@
 { config, pkgs, inputs, ... }:
 
 {
-  # Quickshell Paket installieren
   home.packages = [
-    inputs.quickshell.packages.${pkgs.system}.default
+    # FIX: Nutzung von stdenv.hostPlatform.system statt pkgs.system entfernt die Warnung
+    inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default
     pkgs.qt6.qtdeclarative
     
-    # Fonts, die du im UI benutzt
+    # Fonts für das UI
     pkgs.nerd-fonts.jetbrains-mono
     pkgs.nerd-fonts.fira-code
     pkgs.noto-fonts
@@ -14,7 +14,6 @@
     pkgs.noto-fonts-color-emoji
   ];
 
-  # Verlinkt den Ordner "configs/quickshell" relativ zu dieser Datei
-  # nach ~/.config/quickshell
+  # Verlinkt die Assets aus dem Distro-Ordner
   xdg.configFile."quickshell".source = ../configs/quickshell;
 }
