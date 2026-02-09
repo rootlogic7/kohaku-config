@@ -117,5 +117,13 @@
   
   programs.gamemode.enable = true;
 
+  # Steam Installation und Optimierung
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; # Öffnet Ports für Steam Remote Play
+    dedicatedServer.openFirewall = true; # Öffnet Ports für Source-Server
+    localNetworkGameTransfers.openFirewall = true; # Erlaubt Transfers im LAN
+  };
+
   system.stateVersion = "24.11"; 
 }
