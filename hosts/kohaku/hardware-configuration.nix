@@ -13,27 +13,6 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
-  fileSystems."/" =
-    { device = "rpool/root";
-      fsType = "zfs";
-    };
-
-  fileSystems."/home" =
-    { device = "rpool/home";
-      fsType = "zfs";
-    };
-
-  fileSystems."/nix" =
-    { device = "rpool/nix";
-      fsType = "zfs";
-    };
-
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/9706-7E2D";
-      fsType = "vfat";
-      options = [ "fmask=0022" "dmask=0022" ];
-    };
-
   swapDevices = [ ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";

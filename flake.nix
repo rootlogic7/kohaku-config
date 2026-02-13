@@ -20,6 +20,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     impermanence.url = "github:nix-community/impermanence";
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, ... }@inputs: {
@@ -29,6 +33,8 @@
       modules = [
         ./hosts/kohaku/default.nix
         ./modules/core/default.nix
+        ./hosts/kohaku/disko.nix
+        inputs.disko.nixosModules.disko
         inputs.chaotic.nixosModules.default
         inputs.sops-nix.nixosModules.sops
         inputs.impermanence.nixosModules.impermanence

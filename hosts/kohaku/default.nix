@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports = [
@@ -55,12 +55,36 @@
   fileSystems."/storage/media"  = { device = "extra/media"; fsType = "zfs"; };
 
   boot.initrd.luks.devices = {
-    "crypt_root1" = { device = "/dev/nvme0n1p2"; preLVM = true; };
-    "crypt_root2" = { device = "/dev/nvme1n1p2"; preLVM = true; };
     "crypt_safe1" = { device = "/dev/disk/by-id/ata-TOSHIBA_DT01ACA200_94JKP2VHS-part1"; preLVM = true; };
     "crypt_safe2" = { device = "/dev/disk/by-id/ata-WDC_WD40EZRZ-22GXCB0_WD-WCC7K5LD8Y9V-part1"; preLVM = true; };
     "crypt_extra" = { device = "/dev/disk/by-id/ata-WDC_WD40EZRZ-22GXCB0_WD-WCC7K5LD8Y9V-part2"; preLVM = true; };
   };
+  
+  # === ERASE YOUR DARLINGS (EYD) MAGIE ===
+
+  # 1. ZFS Rollback bei jedem Boot (Setzt Root auf den leeren Snapshot zurück)
+  boot.initrd.postDeviceCommands = lib.mkAfter ''
+    zfs rollback -r rpool/root@blank
+  '';
+
+  # 2. Impermanence Konfiguration (Das hier bleibt über Neustarts hinweg erhalten)
+  environment.persistence."/persist" = {
+    hideMounts = true;
+    directories = [
+      "/var/log"
+      "/var/lib/nixos"
+      "/var/lib/systemd/coredump"
+      "/etc/NetworkManager/system-connections" # Behält deine WLAN/LAN Passwörter
+    ];
+    files = [
+      "/etc/machine-id"
+      # Deine SOPS-Keys (WICHTIG!)
+      "/etc/ssh/ssh_host_ed25519_key"
+      "/etc/ssh/ssh_host_ed25519_key.pub"
+    ];
+  };
+
+  # =======================================
 
   # --- Networking ---
   networking.networkmanager.enable = true;
