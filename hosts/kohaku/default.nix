@@ -142,6 +142,7 @@
   };
   
   programs.gamemode.enable = true;
+  programs.gamescope.enable = true;
 
   # Steam Installation und Optimierung
   programs.steam = {
