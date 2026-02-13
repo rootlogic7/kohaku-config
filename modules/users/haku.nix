@@ -1,13 +1,13 @@
-{ config, pkgs, vars, ... }:
+{ config, pkgs, ... }:
 
 {
-  users.users.${vars.user} = { 
+  users.users.haku = { 
     isNormalUser = true;
     description = "Haku";
     hashedPasswordFile = config.sops.secrets."haku-password".path;
     extraGroups = [ "networkmanager" "wheel" "video" "gamemode" ];
     shell = pkgs.zsh;
-    openssh.authorizedKeys.keys = [ vars.sshKey ];
+    openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC6FGcKzp9lwFTWQXNNLB1xJC07rTWJeK2GN0J9mcjqg rootlogic7@proton.me" ];
   };
 
   # Zsh auf Systemebene aktivieren, damit Login funktioniert

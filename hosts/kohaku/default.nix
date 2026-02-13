@@ -1,10 +1,10 @@
-{ config, pkgs, vars, ... }:
+{ config, pkgs, ... }:
 
 {
   imports = [
     ./hardware-configuration.nix
     ../../modules/hardware/nvidia.nix
-    ../../modules/users/${vars.user}.nix
+    ../../modules/users/haku.nix
     ../../modules/hardware/zfs-snapshots.nix 
   ];
 
@@ -25,7 +25,7 @@
       ssh = {
         enable = true;
         port = 22;
-        authorizedKeys = [ vars.sshKey ];
+        authorizedKeys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC6FGcKzp9lwFTWQXNNLB1xJC07rTWJeK2GN0J9mcjqg rootlogic7@proton.me" ];
         hostKeys = [ "/etc/ssh/ssh_host_ed25519_key" ];
       };
       postCommands = ''

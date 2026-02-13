@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, vars, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   imports = [
@@ -6,8 +6,8 @@
     ../../modules/spirit-nix/default.nix
   ];
 
-  home.username = vars.user;
-  home.homeDirectory = "/home/${vars.user}";
+  home.username = "haku";
+  home.homeDirectory = "/home/haku";
   
   # --- User-Spezifische Pakete ---
   # Alles, was Haku braucht, aber nicht jeder User haben muss
