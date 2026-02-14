@@ -50,9 +50,11 @@
       "3, monitor:DP-1"
       "4, monitor:DP-1"
       "5, monitor:DP-1"
-      
-      # Optional: Rest auf den zweiten?
-      # "6, monitor:HDMI-A-1"
+      "6, monitor:HDMI-A-1, default:true"
+      "7, monitor:HDMI-A-1"
+      "8, monitor:HDMI-A-1"
+      "9, monitor:HDMI-A-1"
+      "10, monitor:HDMI-A-1"
     ];
 
     # 3. Maus-Einstellungen (Gaming)

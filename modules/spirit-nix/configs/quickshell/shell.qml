@@ -8,35 +8,41 @@ import "./theme"
 ShellRoot {
     id: root
 
-    // Globale Variablen für Popups
     property bool isLauncherOpen: false
-    property var activePopup: null // Für Audio/Netzwerk Popups später
+    property var activePopup: null
 
-    // Singleton für Theme laden (optional, falls wir es so lösen wollen)
-    // Theme {} 
-
-    // Wir suchen explizit nach dem Screen, den wir wollen.
-    // Entweder der erste (Index 0) oder der "Primary".
-    // Quickshell aktualisiert dieses Model automatisch, wenn Hyprland fertig ist.
-    
     Instantiator {
         model: Quickshell.screens
         
         delegate: Loader {
-            // Lade die Bar NUR, wenn es der primäre Monitor ist
-            // Oder du kannst hartcodieren: modelData.name === "DP-1"
-            active: modelData.primary || modelData.name === "DP-1"
+            // Aktiviert den Loader für ALLE Bildschirme, die Hyprland meldet
+            active: true
             
-            sourceComponent: Bar {
-              screen: modelData
-              shellRoot: root
+            // Logik: Ist es der Hauptmonitor? -> mainBar. Sonst -> secondaryBar
+            sourceComponent: (modelData.name === "DP-1" || modelData.primary) 
+                             ? mainBar 
+                             : secondaryBar
+            
+            // Definiere die Haupt-Bar (bekommt automatisch Workspaces 1-5 durch den Default)
+            Component {
+                id: mainBar
+                Bar {
+                    screen: modelData
+                    shellRoot: root
+                }
             }
             
-            onLoaded: console.log("Bar loaded on primary screen: " + modelData.name)
+            // Definiere die Neben-Bar (bekommt Workspaces 6-10 durch unsere neue Datei)
+            Component {
+                id: secondaryBar
+                SecondaryBar {
+                    screen: modelData
+                    shellRoot: root
+                }
+            }
         }
     }
 
-    // Launcher (Global, öffnet sich auf dem aktiven Screen)
     Launcher {
         visible: root.isLauncherOpen
     }
