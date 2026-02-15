@@ -34,6 +34,14 @@
       require("catppuccin").setup({
           flavour = "mocha",
           transparent_background = true,
+          custom_highlights = function(colors)
+            return {
+              SignColumn = { bg = "NONE" },
+              NeoTreeNormal = { bg = "NONE" },
+              NeoTreeNormalNC = { bg = "NONE" },
+              EndOfBuffer = { bg = "NONE" },
+            }
+          end
       })
       vim.cmd.colorscheme "catppuccin"
 

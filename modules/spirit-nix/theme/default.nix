@@ -16,7 +16,7 @@
   # 4. Cursor global setzen
   stylix.cursor = {
     package = pkgs.catppuccin-cursors.mochaMauve;
-    name = "catppuccin-mocha-mauve-cursors";
+    name = "catppuccin-mocha-sapphire-cursors";
     size = 24;
   };
 
@@ -43,8 +43,9 @@
 
   # 6. Deckkraft/Transparenz (Optional)
   stylix.opacity = {
-    applications = 0.95;
-    terminal = 0.90;
-    desktop = 0.90; # Beeinflusst z.B. Waybar, falls unterstützt
+    terminal = 0.85; # 85% deckend (Ghostty, Kitty etc.)
+    popups = 0.90;   # 90% deckend (Dein neuer Launcher, Waybar, Audio-Panel)
+    desktop = 1.0;   # Hintergrundbild bleibt voll deckend
+    applications = 1.0; # Normale Apps (Firefox, VSCode) bleiben deckend
   };
 }

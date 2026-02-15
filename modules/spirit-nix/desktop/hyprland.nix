@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   home.packages = with pkgs; [
@@ -53,14 +53,21 @@
         border_size = 2;
         layout = "dwindle";
         allow_tearing = true;
+        # Ein eleganter 45-Grad Farbverlauf aus Sky (base0C) und Sapphire (base0D)
+        "col.active_border" = lib.mkForce "rgb(${config.lib.stylix.colors.base0C}) rgb(${config.lib.stylix.colors.base0D}) 45deg";
+        
+        # Der inaktive Rahmen verschmilzt mit dem dunklen Mocha-Hintergrund
+        "col.inactive_border" = lib.mkForce "rgb(${config.lib.stylix.colors.base00})";
       };
 
       decoration = {
-        rounding = 10;
+        rounding = 12;
         blur = {
           enabled = true;
-          size = 3;
-          passes = 3;
+          size = 4;
+          passes = 2;
+          new_optimizations = true;
+          ignore_opacity = true;
         };
         shadow = {
           enabled = true;
@@ -92,6 +99,10 @@
         "center on, match:class hyprpolkitagent"
         "dim_around on, match:class hyprpolkitagent"
         "stay_focused on, match:class hyprpolkitagent"
+
+        # Transparenz für deine Terminals (angepasst an die neue Syntax)
+        "opacity 0.85 0.85, match:class com.mitchellh.ghostty"
+        "opacity 0.85 0.85, match:class kitty"
         
         # Standard Dialoge
         "float on, match:title (Open File)"

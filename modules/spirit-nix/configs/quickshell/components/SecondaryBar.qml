@@ -33,8 +33,7 @@ PanelWindow {
             anchors.bottom: parent.bottom
             width: parent.width
             height: 2
-            // Etwas dezentere Unterstreichung für den 2. Monitor (Surface0 statt Accent)
-            color: Theme.surface0 
+            color: Theme.accent 
         }
     }
 
