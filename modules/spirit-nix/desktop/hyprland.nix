@@ -51,10 +51,6 @@
         gaps_in = 5;
         gaps_out = 10;
         border_size = 2;
-        # Mauve (#cba6f7) für aktive Fenster
-        "col.active_border" = "rgb(cba6f7)";
-        # Surface0 (#313244) für inaktive Fenster (dunkles Blau-Grau)
-        "col.inactive_border" = "rgb(313244)";
         layout = "dwindle";
         allow_tearing = true;
       };
@@ -70,7 +66,6 @@
           enabled = true;
           range = 4;
           render_power = 3;
-          color = "rgba(1a1a1aee)";
         };
       };
 
@@ -130,6 +125,7 @@
         "$mod, C, killactive,"
         "$mod, M, exit,"
         "$mod, E, exec, $terminal -e yazi"
+        "$mod, SPACE, exec, quickshell ipc call spirit toggle"
         "$mod, V, togglefloating,"
         "$mod, F, fullscreen,"
         "$mod, P, pseudo,"

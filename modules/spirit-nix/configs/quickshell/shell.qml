@@ -1,6 +1,8 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Hyprland
+import Quickshell.Io // WICHTIG: Hier kommt der IpcHandler her
 
 import "./components"
 import "./theme"
@@ -11,39 +13,45 @@ ShellRoot {
     property bool isLauncherOpen: false
     property var activePopup: null
 
+    // Der korrekte IpcHandler
+    IpcHandler {
+        target: "spirit"
+        
+        // WICHTIG: In Quickshell MUSS der Rückgabetyp (: void) explizit angegeben werden!
+        function toggle(): void {
+            root.isLauncherOpen = !root.isLauncherOpen;
+            console.log("Launcher Status: " + root.isLauncherOpen);
+        }
+    }
+
+    // 1. Instantiator für deine Bars
     Instantiator {
         model: Quickshell.screens
         
         delegate: Loader {
-            // Aktiviert den Loader für ALLE Bildschirme, die Hyprland meldet
             active: true
+            sourceComponent: (modelData.name === "DP-1" || modelData.primary) ? mainBar : secondaryBar
             
-            // Logik: Ist es der Hauptmonitor? -> mainBar. Sonst -> secondaryBar
-            sourceComponent: (modelData.name === "DP-1" || modelData.primary) 
-                             ? mainBar 
-                             : secondaryBar
-            
-            // Definiere die Haupt-Bar (bekommt automatisch Workspaces 1-5 durch den Default)
             Component {
                 id: mainBar
-                Bar {
-                    screen: modelData
-                    shellRoot: root
-                }
+                Bar { screen: modelData; shellRoot: root }
             }
             
-            // Definiere die Neben-Bar (bekommt Workspaces 6-10 durch unsere neue Datei)
             Component {
                 id: secondaryBar
-                SecondaryBar {
-                    screen: modelData
-                    shellRoot: root
-                }
+                SecondaryBar { screen: modelData; shellRoot: root }
             }
         }
     }
 
-    Launcher {
-        visible: root.isLauncherOpen
+    // 2. Instantiator für den schwebenden Launcher
+    Instantiator {
+        model: Quickshell.screens
+        delegate: Launcher {
+            screen: modelData
+            shellRoot: root
+            // Sichtbar, wenn getoggelt UND auf dem aktiven Monitor
+            visible: root.isLauncherOpen && (Hyprland.focusedMonitor && Hyprland.focusedMonitor.name === modelData.name)
+        }
     }
 }

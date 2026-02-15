@@ -5,7 +5,8 @@
     ./hardware-configuration.nix
     ../../modules/hardware/nvidia.nix
     ../../modules/users/haku.nix
-    ../../modules/hardware/zfs-snapshots.nix 
+    ../../modules/hardware/zfs-snapshots.nix
+    ../../modules/spirit-nix/theme/default.nix
   ];
 
   networking.hostName = "kohaku";

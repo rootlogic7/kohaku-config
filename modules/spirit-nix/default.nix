@@ -8,7 +8,5 @@
     ./cli/shell.nix
     ./cli/ghostty.nix
     ./cli/neovim.nix
-    ./theme/default.nix
-    ./theme/gtk.nix
   ];
 }
