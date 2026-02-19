@@ -64,5 +64,6 @@
 
   # Basis-Netzwerk
   networking.networkmanager.enable = true;
+  environment.pathsToLink = [ "/share/xdg-desktop-portal" "/share/applications" ];
   system.stateVersion = "24.11"; 
 }

@@ -52,6 +52,7 @@
       specialArgs = { inherit inputs; };
       modules = [
         ./hosts/shikigami/default.nix
+        ./modules/core/default.nix
         # Nur das absolute Minimum an Modulen!
         inputs.disko.nixosModules.disko
         inputs.impermanence.nixosModules.impermanence
