@@ -27,37 +27,43 @@
         "wl-paste --type image --watch cliphist store"
       ];
 
-      # --- Monitors (Fallback) ---
-      monitor = [
+      # --- Monitors (Hardware Agnostic Fallback) ---
+      # lib.mkDefault bedeutet: Nimm das, außer die Host-Config sagt was anderes.
+      monitor = lib.mkDefault [
         ", preferred, auto, 1"
       ];
+
+      # Workspaces (Fallback: Keine festen Bindings)
+      workspace = lib.mkDefault [ ];
 
       # --- Input (Defaults) ---
       input = {
         kb_layout = "de";
         follow_mouse = 1;
-        touchpad.natural_scroll = false;
+        # Laptops wollen meistens natural_scroll, Desktops eher nicht.
+        # Wir setzen false als Default, können es aber im Laptop überschreiben.
+        touchpad.natural_scroll = lib.mkDefault false;
       };
 
       # --- Cursor ---
       cursor = {
         inactive_timeout = 3;
         hide_on_key_press = true;
-        # no_hardware_cursors = true; # Falls der Cursor flackert/unsichtbar ist, einkommentieren
       };
 
-      # --- Design System ---
+      # --- Design System (Eigene Farben!) ---
       general = {
         gaps_in = 5;
         gaps_out = 10;
         border_size = 2;
         layout = "dwindle";
         allow_tearing = true;
-        # Ein eleganter 45-Grad Farbverlauf aus Sky (base0C) und Sapphire (base0D)
-        "col.active_border" = lib.mkForce "rgb(${config.lib.stylix.colors.base0C}) rgb(${config.lib.stylix.colors.base0D}) 45deg";
         
-        # Der inaktive Rahmen verschmilzt mit dem dunklen Mocha-Hintergrund
-        "col.inactive_border" = lib.mkForce "rgb(${config.lib.stylix.colors.base00})";
+        # Hier nutzen wir jetzt unsere eigenen Theme-Variablen!
+        # Ein Gradient aus Accent (Mauve) und Blue
+        "col.active_border" = "rgb(${config.spirit.theme.colors.accent}) rgb(${config.spirit.theme.colors.blue}) 45deg";
+        # Inaktiver Rahmen aus Surface1
+        "col.inactive_border" = "rgb(${config.spirit.theme.colors.surface1})";
       };
 
       decoration = {
@@ -100,7 +106,7 @@
         "dim_around on, match:class hyprpolkitagent"
         "stay_focused on, match:class hyprpolkitagent"
 
-        # Transparenz für deine Terminals (angepasst an die neue Syntax)
+        # Transparenz
         "opacity 0.85 0.85, match:class com.mitchellh.ghostty"
         "opacity 0.85 0.85, match:class kitty"
         
@@ -175,7 +181,7 @@
         "$mod SHIFT, 9, movetoworkspace, 9"
         "$mod SHIFT, 0, movetoworkspace, 10"
       ];
-      
+
       bindm = [
         "$mod, mouse:272, movewindow"
         "$mod, mouse:273, resizewindow"

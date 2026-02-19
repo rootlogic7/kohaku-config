@@ -24,10 +24,6 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    stylix = {
-      url = "github:danth/stylix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = { self, nixpkgs, ... }@inputs: {
@@ -42,7 +38,6 @@
         inputs.chaotic.nixosModules.default
         inputs.sops-nix.nixosModules.sops
         inputs.impermanence.nixosModules.impermanence
-        inputs.stylix.nixosModules.stylix
         inputs.home-manager.nixosModules.home-manager {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;

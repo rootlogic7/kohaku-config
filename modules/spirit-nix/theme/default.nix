@@ -1,51 +1,38 @@
-{ pkgs, ... }:
+{ lib, config, ... }:
 
-{
-  # Stylix aktivieren
-  stylix.enable = true;
-  
-  # 1. Das Hintergrundbild (Stylix generiert basierend darauf sogar Farben, wenn du willst)
-  stylix.image = ./wallpaper.png;
-
-  # 2. Die Base16 Farbpalette (Wir bleiben bei Catppuccin Mocha als Basis)
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
-
-  # 3. Wir erzwingen den Dark-Mode
-  stylix.polarity = "dark";
-
-  # 4. Cursor global setzen
-  stylix.cursor = {
-    package = pkgs.catppuccin-cursors.mochaMauve;
-    name = "catppuccin-mocha-sapphire-cursors";
-    size = 24;
-  };
-
-  # 5. Schriftarten global definieren
-  stylix.fonts = {
-    monospace = {
-      package = pkgs.nerd-fonts.jetbrains-mono;
-      name = "JetBrainsMono Nerd Font";
+with lib; {
+  # Wir definieren einen eigenen "Namespace" für deine Variablen
+  options.spirit.theme = {
+    
+    wallpaper = mkOption { 
+      type = types.path; 
+      default = ./wallpaper.png; 
+      description = "Das globale Hintergrundbild"; 
     };
-    sansSerif = {
-      package = pkgs.noto-fonts;
-      name = "Noto Sans";
-    };
-    serif = {
-      package = pkgs.noto-fonts;
-      name = "Noto Serif";
-    };
-    sizes = {
-      applications = 12;
-      terminal = 13;
-      desktop = 12;
-    };
-  };
 
-  # 6. Deckkraft/Transparenz (Optional)
-  stylix.opacity = {
-    terminal = 0.85; # 85% deckend (Ghostty, Kitty etc.)
-    popups = 0.90;   # 90% deckend (Dein neuer Launcher, Waybar, Audio-Panel)
-    desktop = 1.0;   # Hintergrundbild bleibt voll deckend
-    applications = 1.0; # Normale Apps (Firefox, VSCode) bleiben deckend
+    colors = {
+      # --- Base Colors ---
+      base     = mkOption { type = types.str; default = "1e1e2e"; description = "Dunkelster Hintergrund (z.B. Terminals)"; };
+      mantle   = mkOption { type = types.str; default = "181825"; description = "Hintergrund für UI-Elemente"; };
+      crust    = mkOption { type = types.str; default = "11111b"; description = "Tiefster Hintergrund (Bars/Panels)"; };
+      
+      # --- Surfaces (Highlights & Overlays) ---
+      surface0 = mkOption { type = types.str; default = "313244"; };
+      surface1 = mkOption { type = types.str; default = "45475a"; description = "Hover States"; };
+      surface2 = mkOption { type = types.str; default = "585b70"; };
+
+      # --- Typography ---
+      text     = mkOption { type = types.str; default = "cdd6f4"; description = "Standard Textfarbe"; };
+      subtext0 = mkOption { type = types.str; default = "a6adc8"; description = "Sekundärer/Gedimmter Text"; };
+
+      # --- Accents ---
+      accent   = mkOption { type = types.str; default = "cba6f7"; description = "Haupt-Akzentfarbe (Mauve)"; };
+      blue     = mkOption { type = types.str; default = "89b4fa"; };
+      green    = mkOption { type = types.str; default = "a6e3a1"; };
+      red      = mkOption { type = types.str; default = "f38ba8"; };
+      yellow   = mkOption { type = types.str; default = "f9e2af"; };
+      peach    = mkOption { type = types.str; default = "fab387"; };
+      teal     = mkOption { type = types.str; default = "94e2d5"; };
+    };
   };
 }
