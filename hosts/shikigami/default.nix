@@ -65,5 +65,10 @@
   # Basis-Netzwerk
   networking.networkmanager.enable = true;
   environment.pathsToLink = [ "/share/xdg-desktop-portal" "/share/applications" ];
+  
+  # --- Grafik & Desktop
+  hardware.graphics.enable = true;
+  programs.hyprland.enable = true;  
+
   system.stateVersion = "24.11"; 
 }
