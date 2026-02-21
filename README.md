@@ -1,119 +1,38 @@
 # 👻 Spirit-OS
 
-Willkommen im Monorepo für meine NixOS-Infrastruktur. Dieses Repository verwaltet meine gesamte PC-Flotte und enthält meine eigene, modulare Linux-Distribution "Spirit-Nix".
+A modular, reproducible, and deeply themed NixOS configuration built with Flakes and Home-Manager. 
 
-## 📂 Struktur
+## 🌌 Architecture
+Spirit-OS is designed to be hardware-agnostic at its core, allowing seamless deployment across multiple machines while maintaining a unified, centralized theming engine.
 
-Die Konfiguration folgt dem Nix Flakes Ansatz und ist modular aufgebaut:
+* **Flakes & Home-Manager:** Centralized dotfile and package management.
+* **Impermanence (Erase Your Darlings):** Root file systems are mounted on ZFS-snapshots and wiped on every boot. Only strictly defined state is kept in `/persist`.
+* **SOPS-Nix:** Age-encrypted secret management for passwords and API keys.
+* **Spirit-Theme Engine:** A custom Nix module defining global hex codes and variables (based on Catppuccin), injecting them into all apps (Hyprland, Ghostty, Waybar, etc.).
 
-o├── flake.nix                   # Einstiegspunkt & Definition der Hosts
+## 💻 Hosts
 
-o├── flake.lock                  # Gepinnte Versionen (Reproduzierbarkeit)
+* **`kohaku`** (Desktop)
+  * High-performance Wayland environment (Hyprland).
+  * Dual-monitor setup with gaming-optimized input overrides.
+  * ZFS layout with dedicated gaming pools.
+  * Uses the `chaotic-nyx` CachyOS kernel for lower latency.
+* **`shikigami`** (Laptop - Thinkpad)
+  * Lightweight, portable Wayland environment.
+  * Intel integrated graphics, touchpad gestures, and single-display layout.
+  * Strict impermanence setup for maximum privacy.
 
-o├── hosts/                      # Maschinenspezifische Konfigurationen
+## 🛠️ Core Stack
+* **WM:** Hyprland
+* **Terminal:** Ghostty
+* **Shell:** Zsh / Fastfetch
+* **Bar/Shell:** Quickshell / Waybar
+* **File Manager:** Yazi
 
-o│ooooo├── kohaku/                 # Haupt-Workstation
-
-o│ooooo└── (chihiro)/              # (Zukünftiger Laptop)
-
-o├── modules/                    # Wiederverwendbare Module
-
-o│ooooo├── core/                   # Basis-System (für ALLE Rechner)
-
-o│ooooo├── spirit-nix/             # 🌟 Meine Custom Distro (Theme, Hyprland, Shell)
-
-o│ooooo└── hardware/               # Hardware-Module (Nvidia, ZFS etc.)
-
-o└── users/                      # Benutzer-Definitionen
-
-ooooooo├── haku/                   # Mein User (lädt Spirit-Nix)
-
-ooooooo└── (user2)/               # User
-
-## 🚀 Workflow Cheatsheet
-
-Da Flakes nur Dateien sehen, die Git bekannt sind, ist der Workflow strikt:
-
-### 1. Änderungen anwenden (Der "Daily Loop")
-´´´
-# 1. Änderungen stagen (WICHTIG!)
-git add .
-
-# 2. Testen (Dry Run - baut, aber aktiviert nicht)
-sudo nixos-rebuild dry-activate --flake .#kohaku
-
-# 3. Anwenden (Switch)
-sudo nixos-rebuild switch --flake .#kohaku
-´´´
-
-### 2. System-Updates (Pakete aktualisieren)
-´´
-# 1. flake.lock aktualisieren (lädt neuste Versionen von nixpkgs/chaotic)
-nix flake update
-
-# 2. System neu bauen
-sudo nixos-rebuild switch --flake .#kohaku
-
-# 3. Lockfile committen
-git commit -m "chore: update system packages" flake.lock
-´´
-
-### 3. Aufräumen (Garbage Collection)
-´´
-# Alte Generationen löschen und Store optimieren
-nix-collect-garbage -d
-´´
-
-## 🛠 Verwaltung & Szenarien
-
-### Einen neuen Host hinzufügen (z.B. "chihiro")
-
-1. Verzeichnis hosts/chihiro erstellen.
-
-2. hosts/kohaku/default.nix dorthin kopieren und anpassen (Bootloader, Hostname, Imports).
-
-3. hardware-configuration.nix vom Zielgerät generieren und in den Ordner legen.
-
-4. In flake.nix einen neuen Eintrag unter nixosConfigurations hinzufügen:
-´´
-chihiro = mkSystem { hostname = "chihiro"; user = "haku"; };
-´´
-
-5. Installieren: nixos-rebuild switch --flake .#chihiro
-
-### Einen neuen User hinzufügen (z.B. "bruder")
-
-1. modules/users/bruder.nix erstellen (System-User Definition).
-
-2. users/bruder/home.nix erstellen (Home-Manager Config).
-
-3. In users/bruder/home.nix die Distro importieren:
-´´´
-imports = [ ../../modules/spirit-nix/default.nix ];
-´´
-
-### Secrets verwalten (Sops)
-
-- Passwörter liegen verschlüsselt in secrets/secrets.yaml.
-
-- Bearbeiten: sops secrets/secrets.yaml
-
-    1. Neuen Host berechtigen:
-
-    2. SSH Public Key des Hosts in .sops.yaml hinzufügen.
-
-Keys neu verschlüsseln: sops updatekeys secrets/secrets.yaml
-
-## 🎨 Spirit-Nix Distribution
-
-### Meine persönliche "Distro" lebt in modules/spirit-nix. Sie beinhaltet:
-
-- Desktop: Hyprland (High Performance Config)
-
-- UI: Quickshell (Custom Bars & Widgets in QML)
-
-- Shell: Zsh + Starship + CLI Tools (eza, bat, fzf)
-
-- Theme: Globales Styling
-
-Änderungen am Design sollten immer in modules/spirit-nix gemacht werden, damit alle User davon profitieren.
+## 🚀 Installation (New Host)
+1. Boot from a NixOS Live USB.
+2. Partition the disk using the host's `disko.nix` script.
+3. Generate hardware config: `nixos-generate-config --show-hardware-config`
+4. Add the new host to `flake.nix` and create its host directory.
+5. Provide the `age` key for SOPS decryption.
+6. Run `nixos-rebuild switch --flake .#<hostname>`
