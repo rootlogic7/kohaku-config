@@ -25,6 +25,10 @@
 
   nixpkgs.config.allowUnfree = true;
 
+  imports = [
+    ./greeter.nix
+  ];
+
   # --- Basis Pakete ---
   environment.systemPackages = with pkgs; [
     git

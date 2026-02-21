@@ -153,22 +153,9 @@
       };
     };
   };
-
-  # 1. Wir aktivieren sysc-greet, damit das System das Paket und die Configs baut
-  services.sysc-greet = {
-    enable = true;
-    compositor = "hyprland"; 
-  };
-
-  # 2. HIJACK: Wir überschreiben den TTY-Startbefehl von sysc-greet mit Gewalt!
-  # Statt im fehlerhaften TTY zu starten, zünden wir unsere minimale Hyprland-Sitzung.
-  services.greetd.settings.default_session = pkgs.lib.mkForce {
-    command = "start-hyprland";
-    user = "greeter";
-  };
-
-  # 3. Die Konfiguration für das "Greeter-Hyprland" (Nur für Kohaku!)
-  environment.etc."greetd/hyprland.conf".text = ''
+  
+  # --- Host-spezifische Greeter Konfiguration (Kohaku) ---
+  environment.etc."greetd/hyprland.conf".text = lib.mkBefore ''
     # --- Nvidia Environment Variables ---
     env = LIBVA_DRIVER_NAME,nvidia
     env = XDG_SESSION_TYPE,wayland
@@ -176,57 +163,14 @@
     env = __GLX_VENDOR_LIBRARY_NAME,nvidia
     env = NIXOS_OZONE_WL,1
     
-    # --- Monitore ---
+    # --- Monitore: Physische Aufstellung ---
     monitor=DP-1,3440x1440@100,0x0,1
     monitor=HDMI-A-1,1920x1080@100,3440x0,1
     
-    # --- Workspaces ---
     workspace = 1, monitor:DP-1, default:true
     
-    # --- Tastatur ---
-    input {
-      kb_layout = de
-      follow_mouse = 0
-    }
-
-    # --- Maus ---
-    device {
-      name = logitech-gaming-mouse-g900
-      enabled = false
-    }
-    device {
-      name = logitech-gaming-mouse-g900-2
-      enabled = false
-    }
-    
-    # --- Doppelter Schutz: Versteckt den Cursor sofort beim Tippen ---
-    cursor {
-      inactive_timeout = 1
-      hide_on_key_press = true
-    }
-
-    misc {
-      disable_splash_rendering = true
-      disable_hyprland_logo = true
-      background_color = 0x000000
-    }
-    animations {
-      enabled = false
-    }
-    
-    # --- Teleportiert den Cursor sofort aus dem Bild (unten rechts) ---
+    # --- Cursor in die Ecke von DP-1 teleportieren ---
     exec-once = ${pkgs.hyprland}/bin/hyprctl dispatch movecursor 3439 1439
-
-    # --- Autostart: Kitty öffnet sich und startet sysc-greet! ---
-    exec-once = [workspace 1; fullscreen] ${pkgs.kitty}/bin/kitty -e sysc-greet
-  '';
-
-  # 4. DEIN TRICK: Wir verlinken die Config ins Home-Verzeichnis des Greeter-Users!
-  # systemd führt das aus, kurz bevor der Greeter startet.
-  systemd.services.greetd.preStart = ''
-    mkdir -p /var/lib/greeter/.config/hypr
-    ln -sf /etc/greetd/hyprland.conf /var/lib/greeter/.config/hypr/hyprland.conf
-    chown -R greeter:greeter /var/lib/greeter
   '';
 
   system.stateVersion = "24.11"; 

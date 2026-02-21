@@ -118,12 +118,15 @@
     alsa.support32Bit = true;
     pulse.enable = true;
   };
-
-  # --- Display Manager (Greetd + Tuigreet) ---
-  services.sysc-greet = {
-    enable = true;
-    compositor = "hyprland";
-  };
+  
+  # --- Host-spezifische Greeter Konfiguration (Shikigami) ---
+  environment.etc."greetd/hyprland.conf".text = lib.mkBefore ''
+    # --- Monitor für Laptop ---
+    monitor=,preferred,auto,1
+    
+    # --- Cursor in die Ecke teleportieren ---
+    exec-once = ${pkgs.hyprland}/bin/hyprctl dispatch movecursor 9999 9999
+  '';
 
   system.stateVersion = "24.11"; 
 }
