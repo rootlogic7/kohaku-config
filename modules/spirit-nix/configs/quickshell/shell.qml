@@ -34,8 +34,7 @@ ShellRoot {
         model: Quickshell.screens
         delegate: Loader {
             active: true
-            sourceComponent: (modelData.name === "DP-1" || modelData.primary) ? mainBar : secondaryBar
-            
+            sourceComponent: (modelData.name === "DP-1" || modelData.name === "eDP-1" || modelData.primary) ? mainBar : secondaryBar 
             Component { id: mainBar; Bar { screen: modelData; shellRoot: root } }
             Component { id: secondaryBar; SecondaryBar { screen: modelData; shellRoot: root } }
         }

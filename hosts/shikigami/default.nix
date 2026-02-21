@@ -70,12 +70,25 @@
   hardware.graphics.enable = true;
   programs.hyprland.enable = true;  
   # --- Home-Manager Host-Overrides für Shikigami ---
-  home-manager.users.haku = { lib, ... }: {
+  home-manager.users.haku = { lib, pkgs, ... }: {
     
+    home.packages = with pkgs; [
+      brightnessctl
+    ];
+
     wayland.windowManager.hyprland.settings = {
       # Interner Laptop-Monitor
       monitor = lib.mkForce [
-        "eDP-1,preferred,auto,1" # Ggf. "eDP-1" anpassen, falls Hyprland ihn anders nennt
+        "eDP-1,preferred,auto,1"
+      ];
+      
+      # Zwingt Workspaces 1-5 auf den Laptop-Bildschirm
+      workspace = lib.mkForce [
+        "1, monitor:eDP-1, default:true"
+        "2, monitor:eDP-1"
+        "3, monitor:eDP-1"
+        "4, monitor:eDP-1"
+        "5, monitor:eDP-1"
       ];
 
       # Touchpad-Gesten
@@ -85,7 +98,25 @@
           tap-to-click = true;
         };
       };
+      # --- Media & Helligkeits-Tasten ---
+      bindel = [
+        ",XF86AudioRaiseVolume, exec, wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+"
+        ",XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+        ",XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+        ",XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
+        ",XF86MonBrightnessUp, exec, brightnessctl s 5%+"
+        ",XF86MonBrightnessDown, exec, brightnessctl s 5%-"
+      ];
     };
+  };
+  
+  # --- Audio (PipeWire) ---
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
   };
 
   system.stateVersion = "24.11"; 
