@@ -69,6 +69,24 @@
   # --- Grafik & Desktop
   hardware.graphics.enable = true;
   programs.hyprland.enable = true;  
+  # --- Home-Manager Host-Overrides für Shikigami ---
+  home-manager.users.haku = { lib, ... }: {
+    
+    wayland.windowManager.hyprland.settings = {
+      # Interner Laptop-Monitor
+      monitor = lib.mkForce [
+        "eDP-1,preferred,auto,1" # Ggf. "eDP-1" anpassen, falls Hyprland ihn anders nennt
+      ];
+
+      # Touchpad-Gesten
+      input = {
+        touchpad = {
+          natural_scroll = true;
+          tap-to-click = true;
+        };
+      };
+    };
+  };
 
   system.stateVersion = "24.11"; 
 }

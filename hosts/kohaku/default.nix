@@ -151,6 +151,41 @@
     dedicatedServer.openFirewall = true; # Öffnet Ports für Source-Server
     localNetworkGameTransfers.openFirewall = true; # Erlaubt Transfers im LAN
   };
+  # --- Home-Manager Host-Overrides für Kohaku ---
+  home-manager.users.haku = { lib, pkgs, ... }: {
+    
+    # Desktop-spezifische Pakete hinzufügen
+    home.packages = with pkgs; [
+      vesktop
+      mangohud
+    ];
+
+    # Hardware-spezifische Hyprland Settings
+    wayland.windowManager.hyprland.settings = {
+      # mkForce überschreibt die Fallback-Liste aus der home.nix komplett
+      monitor = lib.mkForce [
+        "DP-1,3440x1440@100,0x0,auto"
+        "HDMI-A-1,1920x1080@100,3440x0,auto"
+      ];
+      
+      workspace = [
+        "1, monitor:DP-1, default:true"
+        "2, monitor:DP-1"
+        "3, monitor:DP-1"
+        "4, monitor:DP-1"
+        "5, monitor:DP-1"
+        "6, monitor:HDMI-A-1, default:true"
+        "7, monitor:HDMI-A-1"
+        "8, monitor:HDMI-A-1"
+        "9, monitor:HDMI-A-1"
+        "10, monitor:HDMI-A-1"
+      ];
+
+      input = {
+        accel_profile = "flat";
+      };
+    };
+  };
 
   system.stateVersion = "24.11"; 
 }
