@@ -27,6 +27,7 @@
 
   imports = [
     ./greeter.nix
+    ./impermanence.nix
   ];
 
   # --- Basis Pakete ---

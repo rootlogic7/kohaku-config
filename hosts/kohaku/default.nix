@@ -77,33 +77,6 @@
     zfs rollback -r rpool/root@blank
     zfs rollback -r rpool/home@blank
   '';
-
-  # 2. Impermanence Konfiguration (Das hier bleibt über Neustarts hinweg erhalten)
-  environment.persistence."/persist" = {
-    hideMounts = true;
-    directories = [
-      "/var/log"
-      "/var/lib/nixos"
-      "/var/lib/systemd/coredump"
-      "/etc/NetworkManager/system-connections" # Behält deine WLAN/LAN Passwörter
-    ];
-    files = [
-      "/etc/machine-id"
-      # Deine SOPS-Keys (WICHTIG!)
-      "/etc/ssh/ssh_host_ed25519_key"
-      "/etc/ssh/ssh_host_ed25519_key.pub"
-    ];
-    users.haku = {
-      directories = [
-        "spirit-os"
-	".ssh"
-      ];
-      files = [
-        ".zsh_history"
-      ];
-    };
-  };
-
   # =======================================
 
   # --- Networking ---

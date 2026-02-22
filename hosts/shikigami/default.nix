@@ -41,22 +41,6 @@
   # Persistenz (nur das absolut Nötigste für den Boot)
   fileSystems."/persist".neededForBoot = true;
   
-  # --- IMPERMANENCE (Wichtig für den Laptop!) ---
-  environment.persistence."/persist" = {
-    hideMounts = true;
-    directories = [
-      "/var/log"
-      "/var/lib/nixos"
-      "/var/lib/systemd/coredump"
-      "/etc/NetworkManager/system-connections" # Behält WLAN Passwörter
-    ];
-    files = [
-      "/etc/machine-id"
-      "/etc/ssh/ssh_host_ed25519_key"
-      "/etc/ssh/ssh_host_ed25519_key.pub"
-    ];
-  };
-
   # --- SECRETS (SOPS) ---
   sops = {
     defaultSopsFile = ../../secrets/secrets.yaml;
