@@ -164,5 +164,5 @@
     exec-once = ${pkgs.hyprland}/bin/hyprctl dispatch movecursor 3439 1439
   '';
 
-  system.stateVersion = "24.11"; 
+  system.stateVersion = "25.11"; 
 }
