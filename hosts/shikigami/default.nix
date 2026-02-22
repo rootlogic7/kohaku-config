@@ -8,7 +8,7 @@
   ];
 
   networking.hostName = "shikigami";
-  networking.hostId = "1a2b3c4d"; 
+  networking.hostId = "da52ad94"; 
 
   # --- Bootloader & Kernel ---
   boot.loader.systemd-boot.enable = true;
@@ -133,5 +133,5 @@
     exec-once = ${pkgs.hyprland}/bin/hyprctl dispatch movecursor 1365 767
   '';
 
-  system.stateVersion = "24.11"; 
+  system.stateVersion = "25.11"; 
 }
