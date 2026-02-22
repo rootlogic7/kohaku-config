@@ -37,7 +37,7 @@ Bevor der Rechner formatiert wird, müssen die Configs auf den neuesten Stand ge
 5. Klone das Spirit-OS Repository in den flüchtigen Arbeitsspeicher:
 
     ```
-    git clone [https://github.com/DEIN_GITHUB_NAME/spirit-os.git](https://github.com/DEIN_GITHUB_NAME/spirit-os.git) /tmp/spirit-os
+    git clone [https://github.com/rootlogic7/spirit-os.git](https://github.com/rootlogic7/spirit-os.git) /tmp/spirit-os
     cd /tmp/spirit-os
     ```
 
@@ -48,7 +48,7 @@ Führe Disko für den spezifischen Host aus (ersetze kohaku ggf. durch deinen Ho
 Dieser Schritt formatiert die definierten Laufwerke, erstellt die ZFS-Pools, legt die initialen blank-Snapshots für Impermanence an und mountet alles unter /mnt.
 
    ```
-   nix --experimental-features "nix-command flakes" run github:nix-community/disko -- --mode disko ./hosts/kohaku/disko.nix
+   nix --experimental-features "nix-command flakes" run github:nix-community/disko -- --mode disko ./hosts/<HOSTNAME>/disko.nix
    ```
 
 
@@ -103,7 +103,7 @@ Zurück am Live-USB-Stick des zu installierenden Rechners:
 2. Starte die NixOS-Installation. (Wir verbieten absichtlich ein lokales Root-Passwort, da das System über sudo und SOPS gesichert ist!)
 
     ```
-    nixos-install --flake .#kohaku --no-root-passwd
+    nixos-install --flake .#<HOSTNAME> --no-root-passwd
     ```
 
 
