@@ -1,0 +1,8 @@
+# Nix build results
+result
+result-*
+
+# Temporäre oder Backup-Dateien
+*.swp
+*~
+.direnv/
