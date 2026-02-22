@@ -25,6 +25,9 @@
       directories = [
         "spirit-os"    # Dein Repo
         ".ssh"         # Deine known_hosts für GitHub
+        ".mozilla"
+        ".config/keepassxc"
+        "Tresor"
       ];
       files = [
         ".zsh_history" # Deine Shell-History

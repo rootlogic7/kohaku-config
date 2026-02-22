@@ -13,6 +13,7 @@
     firefox
     yazi
     obsidian
+    keepassxc
   ];
 
   programs.git = {
