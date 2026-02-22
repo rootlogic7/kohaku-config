@@ -25,6 +25,7 @@
         "hypridle"
         "wl-paste --type text --watch cliphist store"
         "wl-paste --type image --watch cliphist store"
+        "keepassxc"
       ];
 
       # --- Monitors (Hardware Agnostic Fallback) ---
