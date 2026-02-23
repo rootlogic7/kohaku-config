@@ -16,7 +16,6 @@
     keepassxc
   ];
 
-  # === DIESEN BLOCK HINZUFÜGEN ===
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
@@ -29,7 +28,6 @@
       };
     };
   };
-  # ===============================
 
   programs.git = {
     enable = true;
@@ -50,16 +48,6 @@
     input = {
       # Standardmäßig keine Mausempfindlichkeits-Änderung
       sensitivity = lib.mkDefault 0;
-    };
-  };
-
-  programs.firefox = {
-    enable = true;
-    profiles.haku = {
-      isDefault = true;
-      id = 0;
-      # Dies sorgt dafür, dass Firefox immer exakt dieses Profil nutzt
-      # und die Add-ons sowie Einstellungen darin behält.
     };
   };
 

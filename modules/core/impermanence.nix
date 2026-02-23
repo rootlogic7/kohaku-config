@@ -3,7 +3,7 @@
 
 {
   environment.persistence."/persist" = {
-    hideMounts = true;
+    hideMounts = false;
     
     # --- System-Ordner ---
     directories = [
@@ -23,9 +23,11 @@
     # --- User-Ordner (für 'haku') ---
     users.haku = {
       directories = [
-        "spirit-os"    # Dein Repo
-        ".ssh"         # Deine known_hosts für GitHub
-        ".mozilla"
+        "spirit-os"
+        ".ssh"
+        ".mozilla"  # KeePassXC -> Firefox Extensions
+        ".config/mozilla"
+        ".cache/mozilla"
         ".config/keepassxc"
         "Tresor"
       ];
