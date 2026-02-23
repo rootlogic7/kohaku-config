@@ -46,6 +46,9 @@
     package = pkgs.ananicy-cpp;
     rulesProvider = pkgs.ananicy-rules-cachyos;
   };
+  
+  # --- QEMU-Emulation for building yashiro ---
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   # --- Storage (ZFS & LUKS) ---
   boot.supportedFilesystems = [ "zfs" ];

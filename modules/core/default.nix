@@ -8,11 +8,9 @@
     # Binary Caches für schnellere Builds
     substituters = [
       "https://nix-community.cachix.org"
-      "https://chaotic-nyx.cachix.org"
     ];
     trusted-public-keys = [
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      "chaotic-nyx.cachix.org-1:dHw3kV0d+x7O25psfwbP6tV76r4ivI8pshwlSwP63cs="
     ];
   };
 
