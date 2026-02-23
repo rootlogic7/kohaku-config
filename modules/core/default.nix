@@ -24,7 +24,6 @@
   nixpkgs.config.allowUnfree = true;
 
   imports = [
-    ./greeter.nix
     ./impermanence.nix
   ];
 
@@ -36,25 +35,7 @@
     pciutils
     fastfetch
     sops
-    # Der Wrapper MUSS großgeschrieben sein, um sysc-greet abzufangen!
-    (writeShellScriptBin "Hyprland" ''
-      # Loop-Schutz: Falls start-hyprland intern wieder "Hyprland" aufruft
-      if [ "$HYPRLAND_WRAPPER_ACTIVE" = "1" ]; then
-        exec ${pkgs.hyprland}/bin/Hyprland "$@"
-      else
-        export HYPRLAND_WRAPPER_ACTIVE=1
-        exec start-hyprland "$@"
-      fi
-    '')
   ];
-
-  # --- Editor ---
-  programs.neovim = {
-    enable = true;
-    defaultEditor = true;
-    viAlias = true;
-    vimAlias = true;
-  };
 
   # --- Locale & Zeit ---
   time.timeZone = "Europe/Berlin";

@@ -32,8 +32,10 @@
       specialArgs = { inherit inputs; };
       modules = [
         ./hosts/kohaku/default.nix
-        ./modules/core/default.nix
         ./hosts/kohaku/disko.nix
+
+        ./modules/core/default.nix
+        ./modules/desktop/default.nix
 
         inputs.disko.nixosModules.disko
         inputs.impermanence.nixosModules.impermanence
@@ -46,7 +48,7 @@
           home-manager.useUserPackages = true;
           home-manager.backupFileExtension = "backup";
           home-manager.extraSpecialArgs = { inherit inputs; };
-          home-manager.users.haku = import ./users/haku/home.nix;
+          home-manager.users.haku = import ./users/haku/desktop.nix;
         }
       ];
     };
@@ -55,8 +57,10 @@
       specialArgs = { inherit inputs; };
       modules = [
         ./hosts/shikigami/default.nix
-        ./modules/core/default.nix
         ./hosts/shikigami/disko.nix
+
+        ./modules/core/default.nix
+        ./modules/desktop/default.nix
 
         inputs.disko.nixosModules.disko
         inputs.impermanence.nixosModules.impermanence
@@ -68,7 +72,30 @@
           home-manager.useUserPackages = true;
           home-manager.backupFileExtension = "backup";
           home-manager.extraSpecialArgs = { inherit inputs; };
-          home-manager.users.haku = import ./users/haku/home.nix;
+          home-manager.users.haku = import ./users/haku/desktop.nix;
+        }
+      ];
+    };
+    nixosConfigurations.yashiro = nixpkgs.lib.nixosSystem {
+      system = "aarch64-linux";
+      specialArgs = { inherit inputs; };
+      modules = [
+        "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
+        
+        ./hosts/yashiro/default.nix
+
+        ./modules/core/default.nix
+        ./modules/server/default.nix
+        
+        inputs.impermanence.nixosModules.impermanence
+        inputs.sops-nix.nixosModules.sops
+
+        inputs.home-manager.nixosModules.home-manager {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.backupFileExtension = "backup";
+          home-manager.extraSpecialArgs = { inherit inputs; };
+          home-manager.users.haku = import ./users/haku/server.nix;
         }
       ];
     };

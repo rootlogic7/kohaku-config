@@ -1,11 +1,6 @@
 { config, pkgs, ... }:
 
 {
-  home.packages = with pkgs; [
-    ghostty
-    kitty # Backup Terminal
-  ];
-
   programs.starship = {
     enable = true;
     enableZshIntegration = true;
@@ -45,7 +40,6 @@
 
     defaultKeymap = "viins"; 
 
-    # FIX: "initExtra" -> "initContent" (wegen Deprecation Warning)
     initContent = ''
       export TERM=xterm-256color 
       bindkey "^?" backward-delete-char

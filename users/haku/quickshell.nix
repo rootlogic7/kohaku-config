@@ -15,5 +15,5 @@
   ];
 
   # Verlinkt die Assets aus dem Distro-Ordner
-  xdg.configFile."quickshell".source = ../configs/quickshell;
+  xdg.configFile."quickshell".source = ./configs/quickshell;
 }

@@ -1,8 +1,10 @@
+# users/haku/core.nix
 { config, pkgs, lib, inputs, ... }:
 
 {
   imports = [
-    ../../modules/spirit-nix/default.nix
+    ./shell.nix
+    ./neovim.nix
   ];
 
   home.username = "haku";
@@ -10,10 +12,8 @@
   
   # --- Generische Pakete (für alle Rechner) ---
   home.packages = with pkgs; [
-    firefox
     yazi
-    obsidian
-    keepassxc
+    fastfetch
   ];
 
   programs.ssh = {
@@ -37,17 +37,6 @@
         email = "rootlogic7@proton.me";
       };
       init.defaultBranch = "main";
-    };
-  };
-
-  # --- Hardware-Agnostische Hyprland Fallbacks ---
-  wayland.windowManager.hyprland.settings = {
-    # Ein generischer Fallback-Monitor, falls der Host nichts definiert
-    monitor = lib.mkDefault [ ",preferred,auto,1" ];
-
-    input = {
-      # Standardmäßig keine Mausempfindlichkeits-Änderung
-      sensitivity = lib.mkDefault 0;
     };
   };
 
