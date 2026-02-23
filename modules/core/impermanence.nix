@@ -25,6 +25,7 @@
       directories = [
         "spirit-os"
         ".ssh"
+        ".config/sops"
       ];
       files = [
         ".zsh_history"
