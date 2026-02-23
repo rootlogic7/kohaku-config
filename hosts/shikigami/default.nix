@@ -50,6 +50,8 @@
     secrets."haku-password".neededForUsers = true;
   };
 
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
   # Basis-Netzwerk
   networking.networkmanager.enable = true;
   environment.pathsToLink = [ "/share/xdg-desktop-portal" "/share/applications" ];

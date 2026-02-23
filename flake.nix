@@ -80,13 +80,13 @@
       system = "aarch64-linux";
       specialArgs = { inherit inputs; };
       modules = [
-        "${nixpkgs}/nixos/modules/installer/sd-card/sd-image-aarch64.nix"
-        
         ./hosts/yashiro/default.nix
+        ./hosts/yashiro/disko.nix
 
         ./modules/core/default.nix
         ./modules/server/default.nix
-        
+
+        inputs.disko.nixosModules.disko
         inputs.impermanence.nixosModules.impermanence
         inputs.sops-nix.nixosModules.sops
 
