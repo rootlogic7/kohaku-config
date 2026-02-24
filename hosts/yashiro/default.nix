@@ -2,7 +2,7 @@
 
 {
   # Hardware-Module
-  boot.initrd.availableKernelModules = [ "xhci_pci" ];
+  boot.initrd.availableKernelModules = [ "xhci_pci" "pcie_brcmstb" "reset-raspberrypi" "vc4" ];
 
   # Remote Unlock Setup (ohne hostKeys!)
   boot.initrd.network = {
