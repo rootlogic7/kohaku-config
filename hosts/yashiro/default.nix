@@ -29,7 +29,7 @@
     defaultSopsFile = ../../secrets/secrets.yaml;
     defaultSopsFormat = "yaml";
     age.sshKeyPaths = [ "/persist/etc/ssh/ssh_host_ed25519_key" ];
-    secrets."haku-password".neededForUsers = true;
+    # secrets."haku-password".neededForUsers = true;
   };
 
   # --- Notfall-Hintertür (Optional) ---
@@ -43,7 +43,8 @@
     isNormalUser = true;
     description = "Haku";
     # SOPS verknüpfen:
-    hashedPasswordFile = config.sops.secrets."haku-password".path;
+    # hashedPasswordFile = config.sops.secrets."haku-password".path;
+    initialPassword = "susuwatari";
     # Nur die absolut überlebenswichtigen Gruppen (sudo):
     extraGroups = [ "wheel" ];
     shell = pkgs.zsh;
