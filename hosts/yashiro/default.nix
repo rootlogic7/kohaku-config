@@ -1,46 +1,33 @@
 { config, pkgs, lib, ... }:
 
 {
+  # Wir importieren HIER absichtlich nichts mehr, um Seiteneffekte zu vermeiden!
+  # (Die flake.nix kümmert sich ja bereits um die Core- und Server-Module).
+
   # --- Basis-System ---
   networking.hostName = "yashiro";
 
   # --- Boot & Hardware (Die Pi-Spezialitäten) ---
-  
-  # Zwingt den Kernel, seine Ausgaben über HDMI auf dem Monitor anzuzeigen.
   boot.kernelParams = [ "console=tty0" ];
-
-  # Die absolut überlebenswichtigen Treiber für die Vor-Start-Phase (initrd):
   boot.initrd.availableKernelModules = [ 
     "xhci_pci" 
-    "pcie_brcmstb"       # Der PCIe-Bus (Ohne den ist der LAN-Chip blind und taub!)
+    "pcie_brcmstb"       # Der PCIe-Bus fürs Netzwerk
     "reset-raspberrypi"
     "vc4"                # Der Grafiktreiber (Damit das Bild nach "Starting kernel..." bleibt)
   ];
 
   # --- Storage & Impermanence ---
-  # EXTREM WICHTIG FÜR SOPS & IMPERMANENCE:
-  # Da SOPS die Passwörter sehr früh im Boot-Prozess entschlüsseln muss, 
-  # muss die Partition mit deinen persistenten Schlüsseln zwingend rechtzeitig gemountet sein!
+  # Zwingend erforderlich, damit SOPS den SSH-Key beim Booten findet!
   fileSystems."/persist".neededForBoot = true;
 
   # --- Nix & Remote Deployments ---
-  
-  # Erlaubt Admins (die Gruppe @wheel, in der haku ist) das direkte 
-  # Bauen und Deployen über SSH (nixos-rebuild switch ... --target-host).
   nix.settings.trusted-users = [ "root" "@wheel" ];
 
-  # --- Secrets & SOPS (Der Schlüssel zur Festung) ---
+  # --- Secrets & SOPS ---
   sops = {
     defaultSopsFile = ../../secrets/secrets.yaml;
     defaultSopsFormat = "yaml";
-    
-    # DER IMPERMANENCE-FIX:
-    # Da das normale /etc/ssh flüchtig ist, muss SOPS den echten, dauerhaften 
-    # Schlüssel aus deinem Persistenz-Ordner lesen!
     age.sshKeyPaths = [ "/persist/etc/ssh/ssh_host_ed25519_key" ];
-    
-    # Zwingt SOPS, diese Datei extrem früh zu entschlüsseln, noch BEVOR 
-    # NixOS den User 'haku' anlegt und ihm das Passwort zuweisen will.
     secrets."haku-password".neededForUsers = true;
   };
 
@@ -49,5 +36,23 @@
   # Falls du auf Nummer sicher gehen willst, lass diese Zeile für den ersten 
   # Bootvorgang noch einkommentiert, um dich nicht wieder aus sudo auszusperren:
   # security.sudo.wheelNeedsPassword = false;
+
+  # --- Der isolierte Server-User "haku" ---
+  users.users.haku = {
+    isNormalUser = true;
+    description = "Haku";
+    # SOPS verknüpfen:
+    hashedPasswordFile = config.sops.secrets."haku-password".path;
+    # Nur die absolut überlebenswichtigen Gruppen (sudo):
+    extraGroups = [ "wheel" ];
+    shell = pkgs.zsh;
+    openssh.authorizedKeys.keys = [ 
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOZIedSYR0vz3AWo2pykzFiHFCDfKuswPluT4puCsTD6 haku@kohaku" 
+    ];
+  };
+
+  # Zsh auf Systemebene aktivieren, damit der Login in die Shell klappt
+  programs.zsh.enable = true;
+
   system.stateVersion = "25.11";
 }
