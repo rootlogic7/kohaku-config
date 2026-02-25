@@ -51,5 +51,7 @@
     extraGroups = [ "wheel" ];
     openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHa4bO683OVwOVR9sc2aGDT/OI0A1TAkaPUQ6rhnwmqQ haku@shikigami" ];
   };
+  sops.secrets."haku-password".neededForUsers = true;
   nix.settings.trusted-users = [ "root" "@wheel" ];
+  security.sudo.wheelNeedsPassword = false;
 }
