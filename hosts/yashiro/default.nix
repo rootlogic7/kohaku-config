@@ -37,6 +37,10 @@
   # Falls du auf Nummer sicher gehen willst, lass diese Zeile für den ersten 
   # Bootvorgang noch einkommentiert, um dich nicht wieder aus sudo auszusperren:
   # security.sudo.wheelNeedsPassword = false;
+  
+  # Zwingt NixOS, Passwörter bei jedem Rebuild strikt aus der Config/SOPS zu laden!
+  users.mutableUsers = false;
+
 
   # --- Der isolierte Server-User "haku" ---
   users.users.haku = {
