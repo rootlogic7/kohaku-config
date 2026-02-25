@@ -1,8 +1,9 @@
 { config, pkgs, lib, ... }:
 
 {
-  # Wir importieren HIER absichtlich nichts mehr, um Seiteneffekte zu vermeiden!
-  # (Die flake.nix kümmert sich ja bereits um die Core- und Server-Module).
+  # --- Bootloader ---
+  boot.loader.grub.enable = false;
+  boot.loader.generic-extlinux-compatible.enable = true;
 
   # --- Basis-System ---
   networking.hostName = "yashiro";
