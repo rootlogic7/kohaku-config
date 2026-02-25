@@ -23,8 +23,8 @@
 
   # --- Nix & Remote Deployments ---
   nix.settings.trusted-users = [ "root" "@wheel" ];
-
-  # --- Secrets & SOPS ---
+  
+  # --- Secrets & SOPS (Der Schlüssel zur Festung) ---
   sops = {
     defaultSopsFile = ../../secrets/secrets.yaml;
     defaultSopsFormat = "yaml";
