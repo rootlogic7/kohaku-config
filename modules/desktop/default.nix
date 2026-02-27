@@ -1,5 +1,5 @@
 # modules/desktop/default.nix
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 # === === DESKTOP profile === ===
 {
   imports = [
@@ -8,6 +8,7 @@
   ];
 
   environment.systemPackages = with pkgs; [
+    
     # Der Hyprland Wrapper
     (writeShellScriptBin "Hyprland" ''
       if [ "$HYPRLAND_WRAPPER_ACTIVE" = "1" ]; then
@@ -17,5 +18,6 @@
         exec start-hyprland "$@"
       fi
     '')
+    inputs.awww.packages.${pkgs.stdenv.hostPlatform.system}.awww
   ];
 }

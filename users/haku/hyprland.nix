@@ -20,7 +20,7 @@
       # --- Autorun ---
       exec-once = [
         "quickshell"
-        "swww-daemon && sleep 3 && swww img ${config.spirit.theme.wallpaper} --transition-type wipe"
+        "awww-daemon && sleep 2 && awww img ${config.spirit.theme.wallpaper} --transition-type wipe"
         "systemctl --user start hyprpolkitagent"
         "hypridle"
         "wl-paste --type text --watch cliphist store"
