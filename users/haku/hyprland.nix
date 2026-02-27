@@ -20,7 +20,7 @@
       exec-once = [
         "quickshell"
         "awww-daemon"
-        "sleep 2 && awww img ${config.spirit.theme.wallpaper} --transition-type wipe"
+        "awww img ${config.spirit.theme.wallpaper} --transition-type wipe"
         "systemctl --user start hyprpolkitagent"
         "hypridle"
         "wl-paste --type text --watch cliphist store"
