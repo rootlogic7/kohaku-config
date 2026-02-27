@@ -1,42 +1,100 @@
-{ config, pkgs, lib, ... }:
-
-{
+{ config, pkgs, lib, ... }:{
+  # === === === === === === === === === 
+  # === --- --- Imports --- --- --- ===
+  # === === === === === === === === === 
   imports = [
     ./hardware-configuration.nix
     ./disko.nix
     ../../modules/users/haku.nix
   ];
+  # === === === === === === === === === 
+  # === --- --- Networking  --- --- ===
+  # === === === === === === === === === 
+  networking = {
+    hostName = "shikigami";
+    hostId = "da52ad94"; 
+    networkmanager = {
+      enable = true;
+    };
+  };
 
-  networking.hostName = "shikigami";
-  networking.hostId = "da52ad94"; 
+  # === === === === === === === === === 
+  # === --- --- --- Boot -- --- --- ===
+  # === === === === === === === === === 
+  boot = {
 
-  # --- Bootloader & Kernel ---
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  
-  # Standard-Kernel statt chaotic-nyx (besser für Laptops und 8GB RAM)
-  boot.kernelPackages = pkgs.linuxPackages;
-  boot.kernelParams = [ 
-    "quiet" 
-    # WICHTIG: Limitiert den ZFS Cache auf max 1.5 GB (1536 * 1024 * 1024)
-    "zfs.zfs_arc_max=1610612736" 
-  ];
+    # === Bootloader ===
+    loader = {
+      systemd-boot = {
+        enable = true;
+        consoleMode = "max";
+      };
+      timeout = 3;
+      efi = {
+        canTouchEfiVariables = true;
+      };
+    };
 
+    # === Plymouth ===
+    plymouth = {
+      enable = true;
+      theme = "rings";
+      themePackages = with pkgs; [
+        (adi1090x-plymouth-themes.override {
+          selected_themes = [ "rings" ];
+        })
+      ];
+    };
+    consoleLogLevel = 3;
+
+    # === Initrd ===
+    initrd = {
+      verbose = false;
+      availableKernelModules = [ "nvme" "aesni_intel" "cryptd" ];
+      systemd = {
+        enable = true;
+        services = {
+          zfs-rollback = {
+            description = "Rollback ZFS datasets to a pristine state (Erase Your Darlings)";
+            wantedBy = [ "initrd.target" ];
+            # Zwingt den Dienst zu warten, bis LUKS offen und der ZFS-Pool importiert ist
+            after = [ "zfs-import-rpool.service" ];
+            # Zwingt den Dienst, fertig zu sein, BEVOR das System das Root-Laufwerk mountet
+            before = [ "sysroot.mount" ];
+            path = with pkgs; [ zfs ];
+            unitConfig.DefaultDependencies = "no";
+            serviceConfig.Type = "oneshot";
+            script = ''
+              zfs rollback -r rpool/root@blank
+              zfs rollback -r rpool/home@blank
+            '';
+          };
+        };
+      };
+    };
+    # === Kernel ===
+    kernelPackages = pkgs.linuxPackages;
+    kernelParams = [ 
+      "quiet"
+      "udev.log_level=3"
+      "systemd.show_status=auto"
+      # WICHTIG: Limitiert den ZFS Cache auf max 1.5 GB (1536 * 1024 * 1024)
+      "zfs.zfs_arc_max=1610612736"
+    ];
+
+    # === Filesystems ===
+    supportedFilesystems = [ "zfs" ];
+  };
+
+
+  # === === === === === === === === === 
+  # === --- --- --- Next -- --- --- ===
+  # === === === === === === === === === 
   # --- Storage & LUKS ---
-  boot.supportedFilesystems = [ "zfs" ];
   services.zfs.trim.enable = true;
-
-  # Für die Initrd: NVMe- und Krypto-Module laden
-  boot.initrd.availableKernelModules = [ "nvme" "aesni_intel" "cryptd" ];
 
   # === ERASE YOUR DARLINGS (EYD) MAGIE ===
   # ZFS Rollback bei jedem Boot
-  boot.initrd.postDeviceCommands = lib.mkAfter ''
-    udevadm settle
-    zpool import -N rpool || true
-    zfs rollback -r rpool/root@blank
-    zfs rollback -r rpool/home@blank
-  '';
 
   # Persistenz (nur das absolut Nötigste für den Boot)
   fileSystems."/persist".neededForBoot = true;
@@ -50,10 +108,6 @@
     secrets."haku-password".neededForUsers = true;
   };
 
-  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
-
-  # Basis-Netzwerk
-  networking.networkmanager.enable = true;
   environment.pathsToLink = [ "/share/xdg-desktop-portal" "/share/applications" ];
   
   # --- Grafik & Desktop
