@@ -11,32 +11,74 @@
   networking.hostName = "kohaku";
   networking.hostId = "8425e349"; 
 
-  # --- Bootloader & Kernel ---
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelPackages = pkgs.linuxPackages_zen;
-  boot.kernelParams = [
-    "quiet"
-    "splash"
-    "console=tty1"
-    "video=DP-1:3440x1440@100"
-    "video=HDMI-A-1:1920x1080@60"
-  ];
-
-  # --- Initrd Network & SSH Unlock ---
-  boot.initrd = {
-    kernelModules = [ "r8169" "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
-    network = {
-      enable = true;
-      ssh = {
+  # --- Bootloader ---
+  boot = {
+    loader = {
+      systemd-boot = {
         enable = true;
-        port = 22;
-        authorizedKeys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC6FGcKzp9lwFTWQXNNLB1xJC07rTWJeK2GN0J9mcjqg rootlogic7@proton.me" ];
-        hostKeys = [ "/etc/ssh/ssh_host_ed25519_key" ];
+        consoleMode = "max"; # Optional "keep", falls das Logo bei "max" verschwindet
+      };
+      timeout = 3; # 3 Sekunden Wartezeit im unsichtbaren Boot-Menü
+      efi.canTouchEfiVariables = true;
+    };
+
+    plymouth = {
+      enable = true;
+      themePackages = [ pkgs.catppuccin-plymouth ];
+      theme = "catppuccin-macchiato";
+    };
+
+    consoleLogLevel = 0;
+
+    # --- Kernel ---
+    kernelPackages = pkgs.linuxPackages_zen;
+    kernelParams = [
+      "quiet"
+      "splash"
+      "boot.shell_on_fail" 
+      "loglevel=3" 
+      "rd.systemd.show_status=false" 
+      "rd.udev.log_level=3" 
+      "udev.log_priority=3"
+
+      "vt.global_cursor_default=0"
+      #"console=tty1"
+      #"video=DP-1:3440x1440@100"
+      #"video=HDMI-A-1:1920x1080@60"
+    ];
+
+
+    # --- Initrd Network & SSH Unlock ---
+    initrd = {
+      verbose = false;
+      kernelModules = [
+        "r8169"
+        "nvidia"
+        "nvidia_modeset"
+        "nvidia_uvm"
+        "nvidia_drm"
+      ];
+      network = {
+        enable = true;
+        ssh = {
+          enable = true;
+          port = 22;
+          authorizedKeys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIC6FGcKzp9lwFTWQXNNLB1xJC07rTWJeK2GN0J9mcjqg rootlogic7@proton.me" ];
+          hostKeys = [ "/etc/ssh/ssh_host_ed25519_key" ];
+        };
       };
     };
   };
-
+  # Zwingt die TTY-Konsole (Hintergrund und Schrift) auf reines Schwarz
+  console = {
+    earlySetup = true;
+    colors = [
+      "000000" "000000" "000000" "000000"
+      "000000" "000000" "000000" "000000"
+      "000000" "000000" "000000" "000000"
+      "000000" "000000" "000000" "000000"
+    ];
+  };
   # --- Performance ---
   zramSwap.enable = true;
   services.scx = {
