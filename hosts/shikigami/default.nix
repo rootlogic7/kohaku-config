@@ -91,7 +91,7 @@
     # === Filesystems ===
     supportedFilesystems = [ "zfs" ];
   };
-
+  security.rtkit.enable = true;
 
   # === === === === === === === === === 
   # === --- --- - Services  --- --- ===
