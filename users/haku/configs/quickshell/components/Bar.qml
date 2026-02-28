@@ -91,19 +91,35 @@ PanelWindow {
         // Tray (weiterhin auskommentiert)
         // Tray {}
 
-        // Uhr
-        Text {
-            id: clock
-            text: Qt.formatDateTime(new Date(), "HH:mm")
-            color: Theme.text
-            font: Theme.defaultFont
-            
-            Timer {
-                interval: 1000
-                running: true
-                repeat: true
-                onTriggered: clock.text = Qt.formatDateTime(new Date(), "HH:mm")
+        // Uhr Pill
+        Rectangle {
+            Layout.preferredHeight: 32
+            Layout.preferredWidth: clockText.implicitWidth + 24
+            radius: height / 2
+            color: clockMouse.containsMouse ? Theme.surface1 : Theme.surface0
+            Behavior on color { ColorAnimation { duration: 150 } }
+
+            MouseArea { 
+                id: clockMouse
+                anchors.fill: parent
+                hoverEnabled: true 
+                cursorShape: Qt.PointingHandCursor
             }
-        }
+
+            Text {
+                id: clockText
+                anchors.centerIn: parent
+                text: Qt.formatDateTime(new Date(), "HH:mm")
+                color: Theme.text
+                font: Theme.defaultFont
+                
+                Timer {
+                    interval: 1000
+                    running: true
+                    repeat: true
+                    onTriggered: clockText.text = Qt.formatDateTime(new Date(), "HH:mm")
+                }
+            }
+        }  
     }
 }
