@@ -92,6 +92,7 @@
     supportedFilesystems = [ "zfs" ];
   };
   security.rtkit.enable = true;
+  zramSwap.enable = true;
 
   # === === === === === === === === === 
   # === --- --- - Services  --- --- ===
@@ -104,7 +105,23 @@
         enable = true;
       };
     };
+    
+    # === Power Management ===
+    tlp = {
+      enable = true;
+      settings = {
+        CPU_SCALING_GOVERNOR_ON_AC = "performance";
+        CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+        
+        START_CHARGE_THRESH_BAT0 = 75;
+        STOP_CHARGE_THRESH_BAT0 = 90;
 
+        START_CHARGE_THRESH_BAT1 = 75;
+        STOP_CHARGE_THRESH_BAT1 = 90;
+      };
+    };
+    thermald.enable = true;
+    
     # === pipewire ===
     pipewire = {
       enable = true;
@@ -161,7 +178,14 @@
   # === === === === === === === === === 
   # === --- --- Desktop --- --- --- ===
   # === === === === === === === === === 
-  hardware.graphics.enable = true;
+  hardware.graphics = {
+    enable = true;
+    extraPackages = with pkgs; [
+      intel-media-driver # Für Broadwell (5. Gen) oder neuer
+      intel-vaapi-driver # Fallback für ältere i5
+      libvdpau-va-gl
+    ];
+  };
   programs.hyprland.enable = true;
 
   # === === === === === === === === === 
