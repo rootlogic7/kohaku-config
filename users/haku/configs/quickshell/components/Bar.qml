@@ -7,8 +7,8 @@ import Quickshell.Hyprland
 import "../theme"
 
 PanelWindow {
-  id: panel
-  property var shellRoot: null
+    id: panel
+    property var shellRoot: null
     
     anchors {
         top: true
@@ -42,13 +42,10 @@ PanelWindow {
         anchors.rightMargin: 12
         spacing: 10
 
-        // FIX: Text-Icon statt Bild
+        // NixOS Icon (Launcher Toggle)
         Text {
-            text: "" // NixOS Icon (Nerd Font)
+            text: "" 
             color: Theme.blue
-            
-            // FIX: "Property has already been assigned a value" behoben.
-            // Wir setzen die Eigenschaften einzeln, damit wir pixelSize ändern dürfen.
             font.family: Theme.defaultFont.family
             font.bold: Theme.defaultFont.bold
             font.pixelSize: 20 
@@ -62,9 +59,9 @@ PanelWindow {
 
         Workspaces {}
 
-        Item { Layout.fillWidth: true }
+        Item { Layout.fillWidth: true } // Spacer (Links)
 
-        // Window Title
+        // Window Title (Zentriert)
         Rectangle {
             color: Theme.surface0
             radius: Theme.radius
@@ -77,49 +74,24 @@ PanelWindow {
                 anchors.centerIn: parent
                 text: Hyprland.focusedWindow ? Hyprland.focusedWindow.title : ""
                 color: Theme.text
-                font: Theme.defaultFont // Hier ist es okay (keine Überschreibung)
+                font: Theme.defaultFont
                 elide: Text.ElideRight
                 width: parent.width - 20
                 horizontalAlignment: Text.AlignHCenter
             }
         }
 
-        Item { Layout.fillWidth: true }
+        Item { Layout.fillWidth: true } // Spacer (Rechts)
 
+        // --- Die neuen Pill-Module ---
         SystemStats {}
 
-        // Tray (weiterhin auskommentiert)
-        // Tray {}
+        AudioPill {
+            shellRoot: panel.shellRoot 
+        }
 
-        // Uhr Pill
-        Rectangle {
-            Layout.preferredHeight: 32
-            Layout.preferredWidth: clockText.implicitWidth + 24
-            radius: height / 2
-            color: clockMouse.containsMouse ? Theme.surface1 : Theme.surface0
-            Behavior on color { ColorAnimation { duration: 150 } }
+        BatteryPill {}
 
-            MouseArea { 
-                id: clockMouse
-                anchors.fill: parent
-                hoverEnabled: true 
-                cursorShape: Qt.PointingHandCursor
-            }
-
-            Text {
-                id: clockText
-                anchors.centerIn: parent
-                text: Qt.formatDateTime(new Date(), "HH:mm")
-                color: Theme.text
-                font: Theme.defaultFont
-                
-                Timer {
-                    interval: 1000
-                    running: true
-                    repeat: true
-                    onTriggered: clockText.text = Qt.formatDateTime(new Date(), "HH:mm")
-                }
-            }
-        }  
+        ClockPill {}
     }
 }
